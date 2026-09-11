@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Matriz de Rastreabilidade</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      justify-items: center;
+      align-items: start;
+      padding: clamp(56px, 10vh, 110px) 24px 24px;
+      color: #202124;
+      background: #f7f8fb;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    main { width: min(860px, 100%); }
+    h1 { margin: 0 0 8px; color: #141414; font-size: clamp(26px, 5vw, 38px); }
+    p { margin: 0 0 28px; color: #59616a; line-height: 1.5; }
+    nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    a {
+      display: block;
+      padding: 28px 26px;
+      border: 1px solid #cfd5df;
+      border-radius: 10px;
+      color: #172b4d;
+      background: #fff;
+      text-decoration: none;
+      box-shadow: 0 4px 14px #0000000a;
+    }
+    a:hover { border-color: #315da8; box-shadow: 0 6px 18px #00000012; }
+    a:focus-visible { outline: 3px solid #315da8; outline-offset: 3px; }
+    strong { display: block; font-size: 19px; }
+    @media (max-width: 600px) { nav { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Matriz de Rastreabilidade</h1>
+    <p>Selecione o cenário que deseja consultar.</p>
+    <nav aria-label="Cenários de rastreabilidade">
+      <a href="cenario-atual/">
+        <strong>Cenário atual</strong>
+      </a>
+      <a href="cenario-desejado/">
+        <strong>Cenário desejado</strong>
+      </a>
+    </nav>
+  </main>
+</body>
+</html>
