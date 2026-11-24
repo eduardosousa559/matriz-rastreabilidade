@@ -1,9 +1,8 @@
-
 const TRACEABILITY_DATA = {
   "title": "CENÁRIO ATUAL",
   "subtitle": "Rastreabilidade: Inputs (Parâmetros) → Métricas/Outputs Atuais",
-  "inputsTitle": "INPUTS (PARÂMETROS CONFIGURADOS ATUALMENTE)",
-  "outputsTitle": "OUTPUTS / MÉTRICAS ATUAIS (16 MÉTRICAS)",
+  "inputsTitle": "INPUTS",
+  "outputsTitle": "OUTPUTS / MÉTRICAS",
   "conopsTitle": "Correspondência com o CONOPS",
   "categories": [
     {
@@ -18,7 +17,7 @@ const TRACEABILITY_DATA = {
           {
             "id": "map_type",
             "label": "map_type",
-            "detail": "floresta / deserto / pradaria"
+            "detail": "random / dense_city / river_city / rural"
           }
         ],
         [
@@ -40,12 +39,6 @@ const TRACEABILITY_DATA = {
             "id": "num_trees",
             "label": "num_trees"
           }
-        ],
-        [
-          {
-            "id": "obstacle_density",
-            "label": "obstacle_density"
-          }
         ]
       ]
     },
@@ -56,7 +49,7 @@ const TRACEABILITY_DATA = {
       "conops": [
         "Equipe mista de UAVs e UGVs.",
         "Sensores distintos e capacidades a bordo.",
-        "Restrição de bateria e consumo energético."
+        "Restrição de bateria, carga útil e consumo energético."
       ],
       "inputRows": [
         [
@@ -71,26 +64,9 @@ const TRACEABILITY_DATA = {
         ],
         [
           {
-            "id": "heterogeneous",
-            "label": "heterogeneous",
-            "detail": "True/False"
-          }
-        ],
-        [
-          {
-            "id": "vehicle_counts",
-            "label": "vehicle_counts",
-            "detail": "rgb / thermal / kit"
-          }
-        ],
-        [
-          {
-            "id": "uav_sensor_range",
-            "label": "uav_sensor_range"
-          },
-          {
-            "id": "uav_footprint_radius",
-            "label": "uav_footprint_radius"
+            "id": "sensor_radius",
+            "label": "sensor_radius",
+            "detail": "footprint RGB / thermal"
           }
         ],
         [
@@ -99,20 +75,25 @@ const TRACEABILITY_DATA = {
             "label": "battery_capacity"
           },
           {
-            "id": "recharge_time",
-            "label": "recharge_time"
+            "id": "consumption_per_second",
+            "label": "consumption_per_second"
           }
         ],
         [
           {
-            "id": "initial_battery_pct",
-            "label": "initial_battery_pct"
+            "id": "empty_weight",
+            "label": "empty_weight"
+          },
+          {
+            "id": "max_payload_weight",
+            "label": "max_payload_weight"
           }
         ],
         [
           {
-            "id": "energy_consumption_per_sec",
-            "label": "energy_consumption_per_sec"
+            "id": "mass_scaling_exponent",
+            "label": "mass_scaling_exponent",
+            "detail": "consumo dependente da massa"
           }
         ]
       ]
@@ -123,7 +104,7 @@ const TRACEABILITY_DATA = {
       "color": "#D26900",
       "conops": [
         "Presença da UMC/estação como centro de comando local.",
-        "Recarga e apoio à operação."
+        "Troca de bateria, estoque e apoio logístico à operação."
       ],
       "inputRows": [
         [
@@ -138,14 +119,9 @@ const TRACEABILITY_DATA = {
         ],
         [
           {
-            "id": "battery_swap_time_sec",
-            "label": "battery_swap_time_sec"
-          }
-        ],
-        [
-          {
-            "id": "station_landable_radius",
-            "label": "station_landable_radius"
+            "id": "depot_inventory",
+            "label": "inventory",
+            "detail": "estoque finito K1 / K2 / K3"
           }
         ]
       ]
@@ -156,29 +132,58 @@ const TRACEABILITY_DATA = {
       "color": "#663399",
       "conops": [
         "Planejamento de rotas.",
-        "Alocação de tarefas.",
-        "Estratégias de exploração da área."
+        "Alocação de tarefas sensível à prioridade.",
+        "Estratégias de exploração e intervenção."
       ],
       "inputRows": [
         [
           {
             "id": "path_algorithm",
             "label": "path_algorithm",
-            "detail": "A*/RRT"
+            "detail": "A* / Theta*"
+          }
+        ],
+        [
+          {
+            "id": "path_parameters",
+            "label": "cell_size / clearance"
           }
         ],
         [
           {
             "id": "task_algorithm",
             "label": "task_algorithm",
-            "detail": "Greedy/Hungarian"
+            "detail": "greedy / priority_greedy"
+          }
+        ],
+        [
+          {
+            "id": "battery_margin",
+            "label": "battery_margin"
+          },
+          {
+            "id": "intervention_time",
+            "label": "intervention_time"
+          }
+        ],
+        [
+          {
+            "id": "allocation_cost_weights",
+            "label": "cost_w_time / cost_w_consumed / cost_w_risk"
+          }
+        ],
+        [
+          {
+            "id": "priority_weight_exp",
+            "label": "priority_weight_exp",
+            "detail": "ponderação P1 / P2 / P3"
           }
         ],
         [
           {
             "id": "coverage_strategy",
             "label": "coverage_strategy",
-            "detail": "lawnmower/spiral"
+            "detail": "lawnmower"
           }
         ]
       ]
@@ -222,25 +227,16 @@ const TRACEABILITY_DATA = {
       "title": "6. CONFIGURAÇÕES GERAIS DA SIMULAÇÃO",
       "color": "#007A8A",
       "conops": [
-        "Geração de alvos/POIs de interesse para descoberta.",
+        "Geração de vítimas/POIs com requisitos de detecção, triagem e assistência.",
         "Parâmetros que controlam a execução da missão no tempo."
       ],
       "inputRows": [
         [
           {
-            "id": "sim_speed",
-            "label": "sim_speed",
-            "detail": "velocidade de visualização"
-          }
-        ],
-        [
-          {
             "id": "timestep",
             "label": "timestep",
             "detail": "passo de tempo da simulação"
-          }
-        ],
-        [
+          },
           {
             "id": "viz_freq",
             "label": "viz_freq",
@@ -258,14 +254,39 @@ const TRACEABILITY_DATA = {
           {
             "id": "num_pois",
             "label": "num_pois",
-            "detail": "quantidade de POIs"
+            "detail": "quantidade de vítimas/POIs"
+          },
+          {
+            "id": "poi_margin",
+            "label": "poi_margin"
           }
         ],
         [
           {
-            "id": "poi_margin",
-            "label": "poi_margin",
-            "detail": "margem mínima dos POIs"
+            "id": "detection_type",
+            "label": "detection_type",
+            "detail": "rgb / thermal / both"
+          }
+        ],
+        [
+          {
+            "id": "triage_priority",
+            "label": "priority",
+            "detail": "P1 / P2 / P3"
+          }
+        ],
+        [
+          {
+            "id": "rescue_kit",
+            "label": "required_payload",
+            "detail": "K1 / K2 / K3, massa e potência"
+          }
+        ],
+        [
+          {
+            "id": "max_steps",
+            "label": "max_steps",
+            "detail": "limite de execução"
           }
         ]
       ]
@@ -275,29 +296,46 @@ const TRACEABILITY_DATA = {
     {
       "id": "area_coverage_percent",
       "label": "area_coverage_percent",
-      "description": "Percentual da área explorável coberta por qualquer UAV."
+      "description": "Percentual da área explorável coberta simultaneamente por UAVs RGB e térmicos."
     },
     {
       "id": "area_coverage_rgb",
       "label": "area_coverage_rgb",
-      "description": "Percentual da área explorável coberta apenas por UAVs RGB."
+      "description": "Percentual da área explorável coberta por UAVs RGB."
     },
     {
       "id": "area_coverage_thermal",
       "label": "area_coverage_thermal",
-      "description": "Percentual da área explorável coberta apenas por UAVs Térmicos."
+      "description": "Percentual da área explorável coberta por UAVs térmicos."
     },
     {
       "id": "MTTD_min",
       "label": "MTTD_min",
       "detail": "tempo médio de detecção",
-      "description": "Tempo médio entre início da missão e descoberta dos POIs."
+      "description": "Tempo médio entre o início da missão e a descoberta dos POIs."
     },
     {
       "id": "MIL_min",
       "label": "MIL_min",
-      "detail": "tempo médio de identificação",
-      "description": "Tempo médio entre descoberta e resolução dos POIs."
+      "detail": "latência média de intervenção",
+      "description": "Tempo médio entre a descoberta e a resolução dos POIs."
+    },
+    {
+      "id": "WMIL_min",
+      "label": "WMIL_min",
+      "detail": "latência ponderada",
+      "description": "Latência média de intervenção ponderada pela urgência P1/P2/P3."
+    },
+    {
+      "id": "MIL_P1_min",
+      "label": "MIL_P1_min",
+      "detail": "latência crítica",
+      "description": "Latência média de intervenção dos POIs críticos P1."
+    },
+    {
+      "id": "P1_survival_rate_percent",
+      "label": "P1_survival_rate_percent",
+      "description": "Percentual de vítimas P1 resolvidas dentro da janela crítica."
     },
     {
       "id": "success_rate_percent",
@@ -306,19 +344,34 @@ const TRACEABILITY_DATA = {
       "description": "Percentual de POIs resolvidos em relação ao total gerado."
     },
     {
+      "id": "payload_delivery_rate",
+      "label": "payload_delivery_rate",
+      "description": "Percentual de POIs que receberam o kit requerido."
+    },
+    {
+      "id": "payload_delivered_kg",
+      "label": "payload_delivered_kg",
+      "description": "Massa total de suprimentos entregues aos POIs."
+    },
+    {
       "id": "total_energy_consumed_pct",
       "label": "total_energy_consumed_pct",
-      "description": "Percentual total de energia consumida pela frota."
+      "description": "Energia total consumida pela frota, incluindo ciclos de troca."
     },
     {
       "id": "energy_per_poi_pct",
       "label": "energy_per_poi_pct",
-      "description": "Percentual médio de energia consumida por POI resolvido."
+      "description": "Energia consumida por POI resolvido."
     },
     {
       "id": "survival_rate_percent",
       "label": "survival_rate_percent",
       "description": "Percentual de veículos que permaneceram operacionais até o fim."
+    },
+    {
+      "id": "total_distance_km",
+      "label": "total_distance_km",
+      "description": "Distância horizontal total percorrida pela frota."
     },
     {
       "id": "delta_L_percent",
@@ -335,14 +388,14 @@ const TRACEABILITY_DATA = {
     {
       "id": "TMM_min",
       "label": "TMM_min",
-      "detail": "tempo médio da missão",
-      "description": "Tempo médio total de duração da missão (minutos)."
+      "detail": "duração da missão",
+      "description": "Tempo total simulado da missão."
     },
     {
       "id": "elapsed_min",
       "label": "elapsed_min",
       "detail": "tempo decorrido",
-      "description": "Tempo total decorrido da simulação (minutos)."
+      "description": "Tempo total decorrido da simulação."
     },
     {
       "id": "mission_completed",
@@ -353,543 +406,103 @@ const TRACEABILITY_DATA = {
     {
       "id": "termination_reason",
       "label": "termination_reason",
-      "description": "Motivo da finalização: Completed / Max Time / Interrupted / No Operational Vehicles."
+      "description": "Motivo da finalização: success / timeout / all_dead."
     },
     {
       "id": "last_events",
       "label": "last_events",
       "detail": "log de eventos",
-      "description": "Últimos eventos da operação (detecções, alocações, replanos, resoluções, trocas de bateria, fim)."
+      "description": "Últimos eventos da operação: detecções, replanos, cargas e intervenções."
     }
   ],
   "relations": [
-    {
-      "inputIds": [
-        "map_type"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "map_width",
-        "map_height"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "num_buildings",
-        "num_trees"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "obstacle_density"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "num_uavs"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "num_uavs"
-      ],
-      "outputId": "area_coverage_rgb"
-    },
-    {
-      "inputIds": [
-        "num_uavs"
-      ],
-      "outputId": "area_coverage_thermal"
-    },
-    {
-      "inputIds": [
-        "num_uavs"
-      ],
-      "outputId": "MTTD_min"
-    },
-    {
-      "inputIds": [
-        "num_uavs"
-      ],
-      "outputId": "MIL_min"
-    },
-    {
-      "inputIds": [
-        "num_uavs"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "num_uavs"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "num_uavs"
-      ],
-      "outputId": "survival_rate_percent"
-    },
-    {
-      "inputIds": [
-        "num_ugvs"
-      ],
-      "outputId": "MIL_min"
-    },
-    {
-      "inputIds": [
-        "num_ugvs"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "num_ugvs"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "num_ugvs"
-      ],
-      "outputId": "survival_rate_percent"
-    },
-    {
-      "inputIds": [
-        "heterogeneous"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "heterogeneous"
-      ],
-      "outputId": "area_coverage_rgb"
-    },
-    {
-      "inputIds": [
-        "heterogeneous"
-      ],
-      "outputId": "area_coverage_thermal"
-    },
-    {
-      "inputIds": [
-        "heterogeneous"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "heterogeneous"
-      ],
-      "outputId": "survival_rate_percent"
-    },
-    {
-      "inputIds": [
-        "vehicle_counts"
-      ],
-      "outputId": "area_coverage_rgb"
-    },
-    {
-      "inputIds": [
-        "vehicle_counts"
-      ],
-      "outputId": "area_coverage_thermal"
-    },
-    {
-      "inputIds": [
-        "vehicle_counts"
-      ],
-      "outputId": "MIL_min"
-    },
-    {
-      "inputIds": [
-        "uav_sensor_range"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "uav_sensor_range"
-      ],
-      "outputId": "area_coverage_rgb"
-    },
-    {
-      "inputIds": [
-        "uav_sensor_range"
-      ],
-      "outputId": "area_coverage_thermal"
-    },
-    {
-      "inputIds": [
-        "uav_footprint_radius"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "uav_footprint_radius"
-      ],
-      "outputId": "area_coverage_rgb"
-    },
-    {
-      "inputIds": [
-        "uav_footprint_radius"
-      ],
-      "outputId": "area_coverage_thermal"
-    },
-    {
-      "inputIds": [
-        "battery_capacity"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "battery_capacity"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "battery_capacity"
-      ],
-      "outputId": "survival_rate_percent"
-    },
-    {
-      "inputIds": [
-        "recharge_time"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "recharge_time"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "recharge_time"
-      ],
-      "outputId": "TMM_min"
-    },
-    {
-      "inputIds": [
-        "initial_battery_pct"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "initial_battery_pct"
-      ],
-      "outputId": "survival_rate_percent"
-    },
-    {
-      "inputIds": [
-        "energy_consumption_per_sec"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "energy_consumption_per_sec"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "energy_consumption_per_sec"
-      ],
-      "outputId": "survival_rate_percent"
-    },
-    {
-      "inputIds": [
-        "station_x",
-        "station_y"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "station_x",
-        "station_y"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "station_x",
-        "station_y"
-      ],
-      "outputId": "survival_rate_percent"
-    },
-    {
-      "inputIds": [
-        "battery_swap_time_sec"
-      ],
-      "outputId": "TMM_min"
-    },
-    {
-      "inputIds": [
-        "battery_swap_time_sec"
-      ],
-      "outputId": "elapsed_min"
-    },
-    {
-      "inputIds": [
-        "path_algorithm"
-      ],
-      "outputId": "delta_L_percent"
-    },
-    {
-      "inputIds": [
-        "path_algorithm"
-      ],
-      "outputId": "ca_interventions"
-    },
-    {
-      "inputIds": [
-        "task_algorithm"
-      ],
-      "outputId": "delta_L_percent"
-    },
-    {
-      "inputIds": [
-        "task_algorithm"
-      ],
-      "outputId": "ca_interventions"
-    },
-    {
-      "inputIds": [
-        "coverage_strategy"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "coverage_strategy"
-      ],
-      "outputId": "area_coverage_rgb"
-    },
-    {
-      "inputIds": [
-        "coverage_strategy"
-      ],
-      "outputId": "area_coverage_thermal"
-    },
-    {
-      "inputIds": [
-        "coverage_strategy"
-      ],
-      "outputId": "MTTD_min"
-    },
-    {
-      "inputIds": [
-        "coverage_strategy"
-      ],
-      "outputId": "MIL_min"
-    },
-    {
-      "inputIds": [
-        "coverage_strategy"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "coverage_strategy"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "coverage_strategy"
-      ],
-      "outputId": "TMM_min"
-    },
-    {
-      "inputIds": [
-        "safe_distance_2d"
-      ],
-      "outputId": "ca_interventions"
-    },
-    {
-      "inputIds": [
-        "clearance_distance_2d"
-      ],
-      "outputId": "ca_interventions"
-    },
-    {
-      "inputIds": [
-        "lateral_offset"
-      ],
-      "outputId": "ca_interventions"
-    },
-    {
-      "inputIds": [
-        "max_altitude_diff"
-      ],
-      "outputId": "ca_interventions"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "area_coverage_percent"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "area_coverage_rgb"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "area_coverage_thermal"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "MTTD_min"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "MIL_min"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "success_rate_percent"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "total_energy_consumed_pct"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "survival_rate_percent"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "delta_L_percent"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "ca_interventions"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "TMM_min"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "elapsed_min"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "mission_completed"
-    },
-    {
-      "inputIds": [
-        "random_seed"
-      ],
-      "outputId": "termination_reason"
-    },
-    {
-      "inputIds": [
-        "num_pois"
-      ],
-      "outputId": "MTTD_min"
-    },
-    {
-      "inputIds": [
-        "num_pois"
-      ],
-      "outputId": "MIL_min"
-    },
-    {
-      "inputIds": [
-        "num_pois"
-      ],
-      "outputId": "success_rate_percent"
-    },
-    {
-      "inputIds": [
-        "num_pois"
-      ],
-      "outputId": "energy_per_poi_pct"
-    },
-    {
-      "inputIds": [
-        "poi_margin"
-      ],
-      "outputId": "MTTD_min"
-    },
-    {
-      "inputIds": [
-        "poi_margin"
-      ],
-      "outputId": "MIL_min"
-    },
-    {
-      "inputIds": [
-        "poi_margin"
-      ],
-      "outputId": "success_rate_percent"
-    },
-    {
-      "inputIds": [
-        "timestep"
-      ],
-      "outputId": "TMM_min"
-    },
-    {
-      "inputIds": [
-        "timestep"
-      ],
-      "outputId": "elapsed_min"
-    }
+    {"inputIds": ["map_type"], "outputId": "area_coverage_percent"},
+    {"inputIds": ["map_type"], "outputId": "MTTD_min"},
+    {"inputIds": ["map_type"], "outputId": "total_distance_km"},
+    {"inputIds": ["map_width", "map_height"], "outputId": "area_coverage_percent"},
+    {"inputIds": ["map_width", "map_height"], "outputId": "MTTD_min"},
+    {"inputIds": ["map_width", "map_height"], "outputId": "TMM_min"},
+    {"inputIds": ["num_buildings", "num_trees"], "outputId": "area_coverage_percent"},
+    {"inputIds": ["num_buildings", "num_trees"], "outputId": "total_distance_km"},
+
+    {"inputIds": ["num_uavs", "num_ugvs"], "outputId": "area_coverage_percent"},
+    {"inputIds": ["num_uavs", "num_ugvs"], "outputId": "MTTD_min"},
+    {"inputIds": ["num_uavs", "num_ugvs"], "outputId": "MIL_min"},
+    {"inputIds": ["num_uavs", "num_ugvs"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["num_uavs", "num_ugvs"], "outputId": "survival_rate_percent"},
+    {"inputIds": ["sensor_radius"], "outputId": "area_coverage_percent"},
+    {"inputIds": ["sensor_radius"], "outputId": "area_coverage_rgb"},
+    {"inputIds": ["sensor_radius"], "outputId": "area_coverage_thermal"},
+    {"inputIds": ["sensor_radius"], "outputId": "MTTD_min"},
+    {"inputIds": ["battery_capacity", "consumption_per_second"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["battery_capacity", "consumption_per_second"], "outputId": "energy_per_poi_pct"},
+    {"inputIds": ["battery_capacity", "consumption_per_second"], "outputId": "survival_rate_percent"},
+    {"inputIds": ["empty_weight", "max_payload_weight"], "outputId": "payload_delivery_rate"},
+    {"inputIds": ["empty_weight", "max_payload_weight"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["mass_scaling_exponent"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["mass_scaling_exponent"], "outputId": "energy_per_poi_pct"},
+
+    {"inputIds": ["station_x", "station_y"], "outputId": "MIL_min"},
+    {"inputIds": ["station_x", "station_y"], "outputId": "total_distance_km"},
+    {"inputIds": ["station_x", "station_y"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["depot_inventory"], "outputId": "payload_delivery_rate"},
+    {"inputIds": ["depot_inventory"], "outputId": "payload_delivered_kg"},
+    {"inputIds": ["depot_inventory"], "outputId": "success_rate_percent"},
+
+    {"inputIds": ["path_algorithm"], "outputId": "delta_L_percent"},
+    {"inputIds": ["path_algorithm"], "outputId": "total_distance_km"},
+    {"inputIds": ["path_algorithm"], "outputId": "TMM_min"},
+    {"inputIds": ["path_parameters"], "outputId": "delta_L_percent"},
+    {"inputIds": ["path_parameters"], "outputId": "total_distance_km"},
+    {"inputIds": ["task_algorithm"], "outputId": "MIL_min"},
+    {"inputIds": ["task_algorithm"], "outputId": "WMIL_min"},
+    {"inputIds": ["task_algorithm"], "outputId": "MIL_P1_min"},
+    {"inputIds": ["task_algorithm"], "outputId": "P1_survival_rate_percent"},
+    {"inputIds": ["task_algorithm"], "outputId": "success_rate_percent"},
+    {"inputIds": ["battery_margin", "intervention_time"], "outputId": "MIL_min"},
+    {"inputIds": ["battery_margin", "intervention_time"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["battery_margin", "intervention_time"], "outputId": "survival_rate_percent"},
+    {"inputIds": ["allocation_cost_weights"], "outputId": "MIL_min"},
+    {"inputIds": ["allocation_cost_weights"], "outputId": "WMIL_min"},
+    {"inputIds": ["allocation_cost_weights"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["priority_weight_exp"], "outputId": "WMIL_min"},
+    {"inputIds": ["priority_weight_exp"], "outputId": "MIL_P1_min"},
+    {"inputIds": ["priority_weight_exp"], "outputId": "P1_survival_rate_percent"},
+    {"inputIds": ["coverage_strategy"], "outputId": "area_coverage_percent"},
+    {"inputIds": ["coverage_strategy"], "outputId": "MTTD_min"},
+
+    {"inputIds": ["safe_distance_2d"], "outputId": "ca_interventions"},
+    {"inputIds": ["clearance_distance_2d"], "outputId": "ca_interventions"},
+    {"inputIds": ["lateral_offset"], "outputId": "ca_interventions"},
+    {"inputIds": ["max_altitude_diff"], "outputId": "ca_interventions"},
+
+    {"inputIds": ["timestep", "viz_freq"], "outputId": "TMM_min"},
+    {"inputIds": ["timestep", "viz_freq"], "outputId": "elapsed_min"},
+    {"inputIds": ["random_seed"], "outputId": "area_coverage_percent"},
+    {"inputIds": ["random_seed"], "outputId": "MTTD_min"},
+    {"inputIds": ["random_seed"], "outputId": "MIL_min"},
+    {"inputIds": ["random_seed"], "outputId": "success_rate_percent"},
+    {"inputIds": ["random_seed"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["num_pois", "poi_margin"], "outputId": "MTTD_min"},
+    {"inputIds": ["num_pois", "poi_margin"], "outputId": "MIL_min"},
+    {"inputIds": ["num_pois", "poi_margin"], "outputId": "success_rate_percent"},
+    {"inputIds": ["detection_type"], "outputId": "MTTD_min"},
+    {"inputIds": ["detection_type"], "outputId": "area_coverage_rgb"},
+    {"inputIds": ["detection_type"], "outputId": "area_coverage_thermal"},
+    {"inputIds": ["triage_priority"], "outputId": "WMIL_min"},
+    {"inputIds": ["triage_priority"], "outputId": "MIL_P1_min"},
+    {"inputIds": ["triage_priority"], "outputId": "P1_survival_rate_percent"},
+    {"inputIds": ["rescue_kit"], "outputId": "payload_delivery_rate"},
+    {"inputIds": ["rescue_kit"], "outputId": "payload_delivered_kg"},
+    {"inputIds": ["rescue_kit"], "outputId": "total_energy_consumed_pct"},
+    {"inputIds": ["max_steps"], "outputId": "mission_completed"},
+    {"inputIds": ["max_steps"], "outputId": "termination_reason"}
   ],
   "referenceNotes": {
-    "conopsReading": "Os parâmetros à esquerda já representam, total ou parcialmente, conceitos presentes no CONOPS e são usados atualmente na aplicação.",
+    "conopsReading": "Os parâmetros à esquerda representam conceitos do CONOPS efetivamente modelados no simulador atual.",
     "observations": [
-      "As métricas atuais são todas derivadas de dados de runtime gerados durante a simulação.",
-      "Esses dados não são visíveis como entrada na interface, mas são produzidos internamente pelos módulos do simulador."
+      "A atualização incorpora Theta*, PriorityGreedy, triagem SAR, entrega de suprimentos e consumo energético dependente da massa.",
+      "As métricas são derivadas dos dados de runtime produzidos pelos módulos do simulador."
     ]
   }
 };

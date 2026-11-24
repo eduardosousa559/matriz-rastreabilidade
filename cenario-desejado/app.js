@@ -63,6 +63,7 @@ function createTraceabilityModel(data) {
 
   return {
     categories,
+    inputs,
     outputs,
     rows,
     relations
@@ -70,7 +71,128 @@ function createTraceabilityModel(data) {
 }
 
 
-function renderTraceabilityLayout(data, root) {
+function formatPriorityScore(score) {
+  return score.toFixed(1).replace(".", ",");
+}
+
+function classifyPriority(score) {
+  if (score >= 4.5) return "Crítica";
+  if (score >= 3.5) return "Alta";
+  if (score >= 2.5) return "Média";
+  return "Baixa";
+}
+
+function createPrioritizationModel(data, traceabilityModel) {
+  const spec = data.prioritization;
+  if (!spec) return null;
+  const requireValid = (condition, message) => {
+    if (!condition) throw new Error(message);
+  };
+  requireValid(spec.methodology && Array.isArray(spec.items)
+    && Array.isArray(spec.implemented), "Dados de priorização inválidos.");
+  const weights = spec.methodology.weights;
+  requireValid(weights && Math.abs(weights.IP + weights.IV + weights.RE - 1) < 1e-9,
+    "Os pesos da priorização devem totalizar 1.");
+  const effortOrder = new Map([
+    ["Muito baixo", 1], ["Baixo", 2], ["Médio", 3], ["Alto", 4], ["Muito alto", 5]
+  ]);
+  const byInput = new Map();
+  const byName = new Map();
+  const implemented = new Map();
+  const orders = new Set();
+  const items = spec.items.map(raw => {
+    requireValid(typeof raw.name === "string" && raw.name.trim(),
+      "Funcionalidade pendente sem nome válido.");
+    requireValid(!byName.has(raw.name), `Funcionalidade duplicada: ${raw.name}.`);
+    requireValid(Array.isArray(raw.inputIds) && raw.inputIds.length > 0,
+      `Funcionalidade sem inputs associados: ${raw.name}.`);
+    requireValid(new Set(raw.inputIds).size === raw.inputIds.length,
+      `Input repetido na funcionalidade ${raw.name}.`);
+    for (const inputId of raw.inputIds) {
+      requireValid(traceabilityModel.inputs.has(inputId),
+        `Priorização referencia input inexistente: ${inputId}.`);
+      requireValid(!byInput.has(inputId), `Input priorizado mais de uma vez: ${inputId}.`);
+    }
+    for (const criterion of ["IP", "IV", "RE"]) {
+      requireValid(Number.isInteger(raw[criterion]) && raw[criterion] >= 1 && raw[criterion] <= 5,
+        `Critério ${criterion} inválido para ${raw.name}.`);
+    }
+    requireValid(effortOrder.has(raw.effort), `Esforço inválido para ${raw.name}.`);
+    requireValid(Number.isInteger(raw.order) && raw.order > 0 && !orders.has(raw.order),
+      `Ordem de implementação inválida para ${raw.name}.`);
+    orders.add(raw.order);
+    const score = Math.round((raw.IP * weights.IP + raw.IV * weights.IV
+      + raw.RE * weights.RE) * 10) / 10;
+    const item = {
+      ...raw,
+      score,
+      priority: classifyPriority(score),
+      outputIds: [...new Set(traceabilityModel.relations
+        .filter(relation => relation.inputIds.some(id => raw.inputIds.includes(id)))
+        .map(relation => relation.outputId))]
+    };
+    for (const inputId of raw.inputIds) byInput.set(inputId, item);
+    byName.set(raw.name, item);
+    return item;
+  }).sort((a, b) => a.order - b.order);
+
+  for (const entry of spec.implemented) {
+    requireValid(traceabilityModel.inputs.has(entry.inputId),
+      `Implementação referencia input inexistente: ${entry.inputId}.`);
+    requireValid(!byInput.has(entry.inputId) && !implemented.has(entry.inputId),
+      `Input classificado mais de uma vez: ${entry.inputId}.`);
+    implemented.set(entry.inputId, entry);
+  }
+  requireValid(byInput.size + implemented.size === traceabilityModel.inputs.size,
+    "Todos os inputs devem estar classificados como implementados ou pendentes.");
+  requireValid(items.every((item, index) => item.order === index + 1),
+    "A ordem recomendada deve ser contínua.");
+  for (const item of items) {
+    for (const dependency of item.dependencies || []) {
+      requireValid(byName.has(dependency),
+        `Dependência inexistente em ${item.name}: ${dependency}.`);
+      const dependencyItem = byName.get(dependency);
+      requireValid(dependencyItem.order < item.order,
+        `Dependência deve anteceder ${item.name}: ${dependency}.`);
+    }
+  }
+  return { spec, items, byInput, byName, implemented, effortOrder };
+}
+
+
+function renderMethodologyPanel(priorityModel) {
+  const element = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+  const panel = element("details", "methodology-panel");
+  panel.append(element("summary", "", "Metodologia de Priorização"));
+  const methodBody = element("div", "methodology-body");
+  methodBody.append(
+    element("p", "", priorityModel.spec.methodology.description),
+    element("p", "formula", priorityModel.spec.methodology.formula),
+    element("p", "", priorityModel.spec.methodology.criteria.IP),
+    element("p", "", priorityModel.spec.methodology.criteria.IV),
+    element("p", "", priorityModel.spec.methodology.criteria.RE),
+    element("p", "", `Escala: ${priorityModel.spec.methodology.scale}`),
+    element("p", "", `Classificação: ${priorityModel.spec.methodology.classes}`),
+    element("p", "", `Esforço: ${priorityModel.spec.methodology.effort}`),
+    element("p", "", priorityModel.spec.methodology.ordering),
+    element("p", "methodology-disclaimer", priorityModel.spec.methodology.disclaimer)
+  );
+  const references = element("ol", "methodology-references");
+  for (const reference of priorityModel.spec.methodology.references) {
+    references.append(element("li", "", reference));
+  }
+  methodBody.append(element("strong", "", "Referências"), references);
+  panel.append(methodBody);
+  return panel;
+}
+
+
+function renderTraceabilityLayout(data, root, priorityModel, traceabilityModel) {
   function element(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -106,6 +228,18 @@ function renderTraceabilityLayout(data, root) {
         const span = element("span", "input-label", label(input));
         span.dataset.inputId = input.id;
         line.append(span);
+        const priorityItem = priorityModel?.byInput.get(input.id);
+        if (priorityItem) {
+          const badges = element("span", "input-priority-badges");
+          badges.setAttribute("aria-label",
+            `Prioridade ${priorityItem.priority}; esforço ${priorityItem.effort}`);
+          badges.append(
+            element("span", `priority-badge priority-${priorityItem.priority.toLowerCase()}`,
+              `Prioridade: ${priorityItem.priority}`),
+            element("span", "effort-badge", `Esforço: ${priorityItem.effort}`)
+          );
+          line.append(badges);
+        }
       });
       inputList.append(line);
     }
@@ -135,7 +269,8 @@ function renderTraceabilityLayout(data, root) {
     grid.append(notes);
   }
   scroll.append(grid);
-  root.replaceChildren(header, scroll);
+  const methodologyPanel = priorityModel ? renderMethodologyPanel(priorityModel) : null;
+  root.replaceChildren(...[header, methodologyPanel, scroll].filter(Boolean));
   document.title = data.title;
 }
 
@@ -281,7 +416,7 @@ function createExplorationState(model) {
   };
 }
 
-function mountCategorySelection(root, model) {
+function mountCategorySelection(root, model, priorityModel) {
   const state = createExplorationState(model);
   const categories = [...root.querySelectorAll(".category")];
   const outputs = [...root.querySelectorAll(".output")];
@@ -294,7 +429,10 @@ function mountCategorySelection(root, model) {
   const destinations = document.createElement("ul");
   destinations.className = "related-output-names";
   destinations.setAttribute("aria-label", "Outputs relacionados");
-  text.append(title, detail, destinations);
+  const assessment = document.createElement("div");
+  assessment.className = "inline-assessment";
+  assessment.hidden = true;
+  text.append(title, detail, destinations, assessment);
   const controls = document.createElement("div");
   const previous = document.createElement("button");
   previous.textContent = "Linha anterior"; previous.type = "button";
@@ -340,6 +478,41 @@ function mountCategorySelection(root, model) {
       destinations.append(item);
     }
     destinations.hidden = related.size === 0;
+    assessment.replaceChildren();
+    const focusedInputId = focusedUnit?.inputIds[0];
+    const priorityItem = focusedInputId ? priorityModel?.byInput.get(focusedInputId) : null;
+    if (priorityItem) {
+      const card = document.createElement("div");
+      card.className = `inline-priority priority-${priorityItem.priority.toLowerCase()}`;
+      const summary = document.createElement("p");
+      summary.className = "inline-priority-summary";
+      summary.textContent = `${priorityItem.name} · Prioridade ${priorityItem.priority}`
+        + ` · P ${formatPriorityScore(priorityItem.score)}`
+        + ` · Esforço ${priorityItem.effort}`;
+      const criteria = document.createElement("div");
+      criteria.className = "priority-criteria";
+      for (const text of [
+        `Impacto no planejamento de missões: ${priorityItem.IP}/5`,
+        `Impacto na validação do sistema: ${priorityItem.IV}/5`,
+        `Relevância para a entrega à FINEP: ${priorityItem.RE}/5`
+      ]) {
+        const criterion = document.createElement("span");
+        criterion.textContent = text;
+        criteria.append(criterion);
+      }
+      const justification = document.createElement("p");
+      justification.textContent = `Justificativa: ${priorityItem.justification}`;
+      card.append(summary, criteria, justification);
+      if (priorityItem.dependencies.length) {
+        const dependencies = document.createElement("p");
+        dependencies.textContent = `Dependências: ${priorityItem.dependencies.join("; ")}.`;
+        card.append(dependencies);
+      }
+      assessment.append(card);
+      assessment.hidden = false;
+    } else {
+      assessment.hidden = true;
+    }
     previous.disabled = !focusedUnit || own.indexOf(focusedUnit) === 0;
     next.disabled = !focusedUnit || own.indexOf(focusedUnit) === own.length - 1;
     const categoryIds = [...model.categories.keys()];
@@ -401,9 +574,11 @@ if (typeof document !== "undefined") {
   const status = document.getElementById("model-status");
   try {
     const traceabilityModel = createTraceabilityModel(TRACEABILITY_DATA);
-    renderTraceabilityLayout(TRACEABILITY_DATA, document.getElementById("diagram"));
+    const priorityModel = createPrioritizationModel(TRACEABILITY_DATA, traceabilityModel);
+    renderTraceabilityLayout(TRACEABILITY_DATA, document.getElementById("diagram"),
+      priorityModel, traceabilityModel);
     const root = document.getElementById("diagram");
-    const refreshSelection = mountCategorySelection(root, traceabilityModel);
+    const refreshSelection = mountCategorySelection(root, traceabilityModel, priorityModel);
     mountConnections(root, traceabilityModel, refreshSelection);
     if (status) status.textContent = "";
   } catch (error) {
